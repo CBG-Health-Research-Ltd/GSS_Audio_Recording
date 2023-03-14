@@ -126,7 +126,7 @@ namespace GSS_Audio_Recording
         private void RenameAudioFile(string fileName)
         {
             string identifiers = ReadFirstLine(@"C:\CBGShared\GSSRecording\SurveyIdentifiers.txt") + "_forupload";
-            File.Move(@"C:\RecordedQuestionsNZSAS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsNZSAS_FTP\" + fileName.Replace("TemporaryFileName", identifiers) + ".wav");
+            File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("TemporaryFileName", identifiers) + ".wav");
         }
 
         //WriteData gets obsolete warnings but it works completely fine
@@ -171,8 +171,8 @@ namespace GSS_Audio_Recording
         {
             DateTime SurveyFinishedQustionsWriteTime = File.GetLastWriteTime(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
             DateTime currentTime = DateTime.Now;
-            string exitQuestionsTrueFalse = ReadFirstLine(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
-            if (((currentTime - SurveyFinishedQustionsWriteTime).TotalSeconds < 10) && (exitQuestionsTrueFalse == "true"))
+            string surveyFinishedTrueFalse = ReadFirstLine(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
+            if (((currentTime - SurveyFinishedQustionsWriteTime).TotalSeconds < 10) && (surveyFinishedTrueFalse == "true"))
             {
                 return true;
             }
