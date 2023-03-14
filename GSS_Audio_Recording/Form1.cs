@@ -116,7 +116,8 @@ namespace GSS_Audio_Recording
             }
 
             //terminate program
-            CloseRecordingProcess();
+            Application.Exit();
+            System.Environment.Exit(1);
 
         }
 
