@@ -38,7 +38,8 @@ namespace GSS_Audio_Recording
             record = "record";//arbritrary and to use if more flags are introduced in future
             Directory.CreateDirectory(@"C:\RecordedQuestionsGSS_FTP\");//Directory where recorded questions will end up
             Directory.CreateDirectory(@"C:\CBGshared\GSSRecording\");
-            File.CreateText(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
+            File.CreateText(@"C:\CBGshared\GSSRecording\SurveyFinished.txt").Close();
+            File.WriteAllText(@"C:\CBGshared\GSSRecording\SurveyFinished.txt", "false");
             RecordInSecret();
 
 
