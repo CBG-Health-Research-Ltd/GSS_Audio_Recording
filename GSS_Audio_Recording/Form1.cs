@@ -37,9 +37,26 @@ namespace GSS_Audio_Recording
             closeFirstInstance();//Close any existing version that is all ready running
             record = "record";//arbritrary and to use if more flags are introduced in future
             Directory.CreateDirectory(@"C:\RecordedQuestionsGSS_FTP\");//Directory where recorded questions will end up
+            Directory.CreateDirectory(@"C:\CBGshared\GSSRecording\");
+            File.CreateText(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
             RecordInSecret();
 
 
+        }
+
+        private string GetJsonInfo()
+        {
+            string json = File.ReadAllText(@"C:\ProgramData\Askia\Scripts\GSSFacedata.js");
+            json = json.Replace("{", ""); json = json.Replace("'", ""); json = json.Replace("\\", ""); json = json.Replace("\"", ""); json = json.Replace("[", ""); json = json.Replace(",", " ");
+            json = json.Replace("/", ""); json = json.Replace("]", ""); json = json.Replace("}", " ");
+
+            int pFrom = json.IndexOf("iPSU: ") + "iPSU: ".Length;
+            int pTo = json.LastIndexOf(" HHID: ");
+            string PSU = "_PSU" + json.Substring(pFrom, pTo - pFrom);
+            pFrom = json.IndexOf("HHID: ") + "HHID: ".Length;
+            pTo = json.LastIndexOf(" iAddress: ");
+            string HHID = "_HHID" + json.Substring(pFrom, pTo - pFrom);
+            return PSU + HHID;
         }
 
         //Close already existing instance of this application - can only have one running at a time.
@@ -77,7 +94,7 @@ namespace GSS_Audio_Recording
                 fileName = fileName + info;
 
 
-                string tempFile = (@"C:\RecordedQuestionsNZSAS_FTP\" + fileName + ".wav");//location that the recorded files are stored
+                string tempFile = (@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav");//location that the recorded files are stored
                 waveFile = new WaveFileWriter(tempFile, waveSource.WaveFormat);
                 waveSource.StartRecording();//Begin recording 
                 SetTimer();//Initialise timer that waits for an hour time-out before ending recording
@@ -125,8 +142,8 @@ namespace GSS_Audio_Recording
         //Renames the audio file once recording is finished by accessing identifiers saved by Sample manager during the exit question process.
         private void RenameAudioFile(string fileName)
         {
-            string identifiers = ReadFirstLine(@"C:\CBGShared\GSSRecording\SurveyIdentifiers.txt") + "_forupload";
-            File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("TemporaryFileName", identifiers) + ".wav");
+            string identifiers = GetJsonInfo() + "_forupload";
+            File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
         }
 
         //WriteData gets obsolete warnings but it works completely fine
