@@ -105,13 +105,14 @@ namespace GSS_Audio_Recording
             while (true)
             {
                 Thread.Sleep(100);
-                if (CheckSurveyFinished() == true || timerElapsed == true)//Checks if the end recording flag has been set my sample manager, if if timer has timed out
+                string finishType = CheckSurveyFinished();
+                if ((finishType == "PQOnly" || finishType == "FullSurvey") || timerElapsed == true)//Checks if the end recording flag has been set my sample manager, if if timer has timed out
                 {
                     timerElapsed = false;
                     waveSource.StopRecording();
                     recording = false;
                     waveFile.Dispose();
-                    RenameAudioFile(fileName);//rename audio file, removing the temp part and adding whatever is in C:\PIAAC\AudioRecording\SurveyIdentifiers.txt first line
+                    RenameAudioFile(fileName, finishType);//rename audio file, removing the temp part and adding whatever is in C:\PIAAC\AudioRecording\SurveyIdentifiers.txt first line
                     break;
                 }
             }
@@ -142,10 +143,23 @@ namespace GSS_Audio_Recording
         }
 
         //Renames the audio file once recording is finished by accessing identifiers saved by Sample manager during the exit question process.
-        private void RenameAudioFile(string fileName)
+        private void RenameAudioFile(string fileName, string finishType)
         {
             string identifiers = GetJsonInfo() + "_forupload";
-            File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+
+            if (finishType == "PQOnly")
+            {
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + "PQ_" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+            }
+            else if (finishType == "FullSurvey")
+            {
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + "PQDQ_" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+            }
+            else
+            {
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+            }
+
         }
 
         //WriteData gets obsolete warnings but it works completely fine
@@ -186,20 +200,30 @@ namespace GSS_Audio_Recording
         }
 
         //Checks for "true" in C:\PIAAC\AudioRecording\ExitQuestionsOpened.txt and ensures it was set within last 10 seconds, allowing us to know that recording should be stopped.
-        private bool CheckSurveyFinished()
+        private string CheckSurveyFinished()
         {
             DateTime SurveyFinishedQustionsWriteTime = File.GetLastWriteTime(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
             DateTime currentTime = DateTime.Now;
             string surveyFinishedTrueFalse = ReadFirstLine(@"C:\CBGshared\GSSRecording\SurveyFinished.txt");
-            if (((currentTime - SurveyFinishedQustionsWriteTime).TotalSeconds < 10) && (surveyFinishedTrueFalse == "true"))
+            if (((currentTime - SurveyFinishedQustionsWriteTime).TotalSeconds < 10) && (surveyFinishedTrueFalse.Contains("true")))
             {
-                return true;
+                if (surveyFinishedTrueFalse.Contains("PQOnly"))
+                {
+                    return "PQOnly";
+                }
+                else if (surveyFinishedTrueFalse.Contains("FullSurvey"))
+                {
+                    return "FullSurvey";
+                }
+                else
+                {
+                    return "Other";
+                }
             }
             else
             {
-                return false; 
+                return "NotFinished"; 
             }
-
 
         }
 
