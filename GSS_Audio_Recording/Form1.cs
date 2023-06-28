@@ -52,10 +52,10 @@ namespace GSS_Audio_Recording
             json = json.Replace("/", ""); json = json.Replace("]", ""); json = json.Replace("}", " ");
 
             int pFrom = json.IndexOf("iPSU: ") + "iPSU: ".Length;
-            int pTo = json.LastIndexOf(" HHID: ");
+            int pTo = json.LastIndexOf(" hhid : ");
             string PSU = "_PSU" + json.Substring(pFrom, pTo - pFrom);
-            pFrom = json.IndexOf("HHID: ") + "HHID: ".Length;
-            pTo = json.LastIndexOf(" iAddress: ");
+            pFrom = json.IndexOf("hhid : ") + "hhid : ".Length;
+            pTo = json.LastIndexOf(" iAddress : ");
             string HHID = "_HHID" + json.Substring(pFrom, pTo - pFrom);
             return PSU + HHID;
         }
@@ -149,15 +149,18 @@ namespace GSS_Audio_Recording
 
             if (finishType == "PQOnly")
             {
-                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + "PQ_" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+                identifiers = "_PQ" + identifiers;
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
             }
             else if (finishType == "FullSurvey")
             {
-                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + "PQDQ_" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+                identifiers = "_PQDQ" + identifiers;
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\"  + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
             }
             else
             {
-                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+                identifiers = "_Timeout" + identifiers;
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\"  + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
             }
 
         }
