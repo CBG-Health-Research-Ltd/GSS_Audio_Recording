@@ -106,7 +106,7 @@ namespace GSS_Audio_Recording
             {
                 Thread.Sleep(100);
                 string finishType = CheckSurveyFinished();
-                if ((finishType == "PQOnly" || finishType == "FullSurvey") || timerElapsed == true)//Checks if the end recording flag has been set my sample manager, if if timer has timed out
+                if ((finishType == "PQOnly" || finishType == "FullSurvey" || finishType == "HQSurvey") || timerElapsed == true)//Checks if the end recording flag has been set my sample manager, if if timer has timed out
                 {
                     timerElapsed = false;
                     waveSource.StopRecording();
@@ -155,7 +155,12 @@ namespace GSS_Audio_Recording
             else if (finishType == "FullSurvey")
             {
                 identifiers = "_PQDQ" + identifiers;
-                File.Move(@"C:\RecordedQuestionsGSS_FTP\"  + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
+            }
+            else if (finishType == "HQSurvey")
+            {
+                identifiers = "_HQ" + identifiers;
+                File.Move(@"C:\RecordedQuestionsGSS_FTP\" + fileName + ".wav", @"C:\RecordedQuestionsGSS_FTP\" + fileName.Replace("_TemporaryFileName", identifiers) + ".wav");
             }
             else
             {
@@ -217,6 +222,10 @@ namespace GSS_Audio_Recording
                 else if (surveyFinishedTrueFalse.Contains("FullSurvey"))
                 {
                     return "FullSurvey";
+                }
+                else if (surveyFinishedTrueFalse.Contains("HQSurvey"))
+                {
+                    return "HQSurvey";
                 }
                 else
                 {
