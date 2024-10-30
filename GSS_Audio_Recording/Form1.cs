@@ -34,6 +34,7 @@ namespace GSS_Audio_Recording
             this.ShowInTaskbar = false; // This is optional
             waveSource = new WaveInEvent();//Needs to be initialised for event firing in recording function.
             InitializeComponent();
+            int test = 1;
             closeFirstInstance();//Close any existing version that is all ready running
             record = "record";//arbritrary and to use if more flags are introduced in future
             Directory.CreateDirectory(@"C:\RecordedQuestionsGSS_FTP\");//Directory where recorded questions will end up
